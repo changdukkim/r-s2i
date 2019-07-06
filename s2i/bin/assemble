@@ -1,0 +1,8 @@
+#!/bin/sh
+
+echo "---> Preparing source..."
+
+echo "---> Installing application source..."
+cp -Rf /tmp/src/. /app
+
+echo "---> Assemble script finished..."
