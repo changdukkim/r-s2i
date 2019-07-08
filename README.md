@@ -42,43 +42,36 @@ Make sure that all of the scripts are executable by running *chmod +x s2i/bin/**
 #### Create the builder image
 The following command will create a builder image named s2i-mnist based on the Dockerfile that was created previously.
 ```
-git clone <>
-docker build -t <Docker Image Names> .
-docker push <Docker Image Names>
+git clone https://github.com/changdukkim/r-s2i.git
+docker build -t <Your Docker Image Names and Tags> .
+#Example
+#docker build -t docker-registry.default.svc:5000/openshift/r-s2i:latest .
+docker push <Your Docker Image Names and Tags>
+#Example
+#docker push docker-registry.default.svc:5000/openshift/r-s2i:latest
 ```
-The builder image can also be created by using the *make* command since a *Makefile* is included.
-
 Once the image has finished building, the command *s2i usage s2i-mnist* will print out the help info that was defined in the *usage* script.
-
-#### Testing the builder image
-The builder image can be tested using the following commands:
-```
-docker build -t s2i-mnist-candidate .
-IMAGE_NAME=s2i-mnist-candidate test/run
-```
-The builder image can also be tested by using the *make test* command since a *Makefile* is included.
 
 #### Creating the application image
 The application image combines the builder image with your applications source code, which is served using whatever application is installed via the *Dockerfile*, compiled using the *assemble* script, and run using the *run* script.
 The following command will create the application image:
 ```
-s2i build test/test-app s2i-mnist s2i-mnist-app
----> Building and installing application from source...
+oc new-build --name r-binary --binary --strategy source --image-stream r-s2i
+cd test/r-script-in-docker
+oc start-build r-s2i --from-dir="." --follow -n <Project Name>
 ```
 Using the logic defined in the *assemble* script, s2i will now create an application image using the builder image as a base and including the source code from the test/test-app directory. 
 
 #### Running the application image
 Running the application image is as simple as invoking the docker run command:
 ```
-docker run -d -p 8080:8080 s2i-mnist-app
+# docker run -t -i docker-registry.default.svc:5000/<Project Name>/r-binary:latest /bin/bash
+Rscript test.R 
 ```
-The application, which consists of a simple static web page, should now be accessible at  [http://localhost:8080](http://localhost:8080).
 
-#### Using the saved artifacts script
-Rebuilding the application using the saved artifacts can be accomplished using the following command:
+#### Using the template
+Deploying the application using the templates can be accomplished using the following command:
 ```
-s2i build --incremental=true test/test-app nginx-centos7 nginx-app
----> Restoring build artifacts...
----> Building and installing application from source...
+oc create -f r-s2i-template.yaml
 ```
-This will run the *save-artifacts* script which includes the custom code to backup the currently running application source, rebuild the application image, and then re-deploy the previously saved source using the *assemble* script.
+You can find the created template at your Openshift catalog, Deploying the app with fill the parameters that templates need.
