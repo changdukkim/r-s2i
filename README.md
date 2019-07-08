@@ -57,7 +57,13 @@ Using the logic defined in the *assemble* script, s2i will now create an applica
 Running the application image is as simple as invoking the docker run command:
 ```
 # docker run -t -i docker-registry.default.svc:5000/<Project Name>/r-binary:latest /bin/bash
-Rscript test.R 
+# Execute R files 
+> Rscript test.R
+# or you can use R cmd
+> R cmd
+> x <- "Hello World"
+> print(x)
+Hello World 
 ```
 
 #### Using the template
