@@ -42,7 +42,9 @@ Make sure that all of the scripts are executable by running *chmod +x s2i/bin/**
 #### Create the builder image
 The following command will create a builder image named s2i-mnist based on the Dockerfile that was created previously.
 ```
-docker build -t s2i-mnist .
+git clone <>
+docker build -t <Docker Image Names> .
+docker push <Docker Image Names>
 ```
 The builder image can also be created by using the *make* command since a *Makefile* is included.
 
